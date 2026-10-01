@@ -8,6 +8,7 @@ import {
   type StoryScene,
 } from '../models/story';
 import { getStats, getTimelineWarning, orderedScenes, validateName } from '../models/storyRules';
+import { searchStory, type StorySearchResult } from '../models/storySearch';
 import type { StoryRepository } from '../repositories/storyRepository';
 
 export type ViewModelStatus = 'loading' | 'ready' | 'editing' | 'error' | 'completed';
@@ -163,16 +164,22 @@ export class StoryViewModel {
     this.setState({ status: 'ready', story, stats: getStats(story), notice: '已恢复示例项目', error: '' });
   }
 
-  get visibleCharacters(): StoryCharacter[] {
-    const story = this.requireStory();
-    const keyword = this.state.search.trim().toLowerCase();
-    return story.characters.filter((character) => `${character.name}${character.role}`.toLowerCase().includes(keyword));
+  get orderedCharacters(): StoryCharacter[] {
+    return this.requireStory().characters;
   }
 
-  get visibleScenes(): StoryScene[] {
+  get orderedScenes(): StoryScene[] {
+    return orderedScenes(this.requireStory());
+  }
+
+  get searchResults(): StorySearchResult[] {
     const story = this.requireStory();
-    const keyword = this.state.search.trim().toLowerCase();
-    return orderedScenes(story).filter((scene) => `${scene.title}${scene.summary}${scene.conflict}`.toLowerCase().includes(keyword));
+    if (this.searchCache?.story === story && this.searchCache.keyword === this.state.search) {
+      return this.searchCache.results;
+    }
+    const results = searchStory(story, this.state.search);
+    this.searchCache = { story, keyword: this.state.search, results };
+    return results;
   }
 
   get selectedScene(): StoryScene | null {
@@ -184,6 +191,8 @@ export class StoryViewModel {
     const story = this.state.story;
     return story ? getTimelineWarning(story) : null;
   }
+
+  private searchCache: { story: StoryDocument; keyword: string; results: StorySearchResult[] } | null = null;
 
   private requireStory(): StoryDocument {
     if (!this.state.story) throw new Error('故事尚未初始化');

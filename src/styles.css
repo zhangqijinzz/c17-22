@@ -90,4 +90,40 @@ input, textarea, select { border: 1px solid var(--line); border-radius: 5px; bac
 .clue-panel { min-width: 0; }.unresolved { color: var(--coral); font: 10px 'DM Mono', monospace; padding-top: 8px; }.unresolved i { display: inline-block; width: 6px; height: 6px; background: var(--coral); border-radius: 50%; }.clue-list { display: grid; gap: 11px; min-height: 105px; }.clue-row { display: grid; grid-template-columns: 25px 1fr auto; gap: 8px; align-items: center; }.clue-symbol { color: #a88abd; font-size: 20px; }.clue-row div { display: grid; gap: 3px; min-width: 0; }.clue-row strong { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }.clue-row span { color: var(--muted); font-size: 10px; }.clue-row b { color: #c4b8aa; padding: 0 3px; }.clue-row em { background: #fbefd9; color: #a36e27; white-space: nowrap; }.clue-row em.resolved { background: #e4efe5; color: #66826a; }.clue-form { flex-wrap: wrap; }.clue-form input { width: 100%; }.clue-form select { flex: 1; min-width: 0; }.clue-form button { padding: 9px 10px; }
 .inspector { position: sticky; top: 22px; }.inspector-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }.inspector h2 { max-width: 210px; line-height: 1.2; }.edit-state { color: #628066; font: 10px 'DM Mono', monospace; background: #e4efe5; padding: 5px 7px; border-radius: 3px; }.inspector label, .field-block { display: grid; gap: 7px; margin-top: 17px; }.inspector label, .field-label { color: var(--muted); font-size: 11px; }.inspector textarea { resize: vertical; line-height: 1.5; }.person-toggles { display: flex; flex-wrap: wrap; gap: 6px; }.person-toggle { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 14px; background: #fffefa; padding: 4px 8px 4px 4px; color: var(--muted); font-size: 10px; }.person-toggle span { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #e9e3da; color: #fff; }.person-toggle.selected { color: #fff; border-color: transparent; }.person-toggle.selected span { background: #ffffff55; }.order-controls { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 16px; display: flex; align-items: center; gap: 6px; }.order-controls span { margin-right: auto; color: var(--muted); font-size: 11px; }.order-controls button { border: 1px solid var(--line); background: #fffefa; border-radius: 4px; padding: 6px 8px; color: var(--ink); font-size: 10px; }.order-controls button:disabled { opacity: .35; cursor: not-allowed; }.empty-inspector { min-height: 220px; }.empty-inspector p { color: var(--muted); font-size: 12px; line-height: 1.6; }
 .app-loading { min-height: 100vh; display: grid; place-content: center; justify-items: center; color: var(--muted); }.app-loading p { font-size: 12px; }
+/* 全局搜索：下拉结果面板 */
+.search-box-wrap { position: relative; }
+.search-box { width: 248px; }
+.search-box input { flex: 1; min-width: 0; }
+.search-clear { border: 0; background: #ece6db; color: #8a8379; border-radius: 50%; width: 17px; height: 17px; line-height: 1; font-size: 12px; display: grid; place-items: center; padding: 0; flex: none; }
+.search-clear:hover { background: #ddd5c8; color: var(--ink); }
+.search-menu { position: absolute; top: 46px; right: 0; width: 400px; max-height: 440px; overflow-y: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 18px 44px rgba(38, 35, 31, .16); padding: 7px; z-index: 40; }
+.search-group { padding: 2px 0; }
+.search-group + .search-group { border-top: 1px solid var(--line); margin-top: 6px; padding-top: 8px; }
+.search-group-title { display: flex; align-items: center; gap: 7px; font-size: 11px; font-weight: 600; color: var(--muted); padding: 4px 9px 6px; }
+.search-group-title em { font-style: normal; font-family: 'DM Mono', monospace; font-size: 10px; background: #efe9de; border-radius: 8px; padding: 1px 7px; }
+.search-group-icon { width: 18px; height: 18px; border-radius: 5px; display: grid; place-items: center; font-size: 11px; font-style: normal; background: #efe9de; color: #8a8379; }
+.search-group-icon.character { background: #f1dfd8; color: #a95543; }
+.search-group-icon.scene { background: #e7edf5; color: #62789d; }
+.search-group-icon.conflict { background: #fbefd9; color: #a36e27; }
+.search-group-icon.clue { background: #ece4f4; color: #7c5e9c; }
+.search-result { display: grid; gap: 3px; width: 100%; text-align: left; border: 0; background: transparent; border-radius: 7px; padding: 8px 10px; }
+.search-result:hover, .search-result:focus-visible { background: #f6f0e6; outline: none; }
+.search-result-main { display: flex; align-items: center; gap: 7px; min-width: 0; }
+.search-result-main strong { font-size: 12.5px; font-weight: 600; }
+.search-field-tag, .search-scene-order { font-style: normal; font: 9px 'DM Mono', monospace; letter-spacing: .4px; border-radius: 3px; padding: 2px 5px; background: #f1dfd8; color: #a95543; white-space: nowrap; }
+.search-result:has(.search-scene-order) .search-field-tag { background: #e7edf5; color: #62789d; }
+.search-scene-order { background: #f0ece4; color: #8a8379; }
+.search-result-snippet { color: var(--muted); font-size: 11px; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.search-menu-footer { padding: 8px 10px 4px; border-top: 1px solid var(--line); margin-top: 6px; color: #a59b8e; font: 10px 'DM Mono', monospace; }
+.search-empty { display: grid; gap: 6px; padding: 30px 22px; text-align: center; }
+.search-empty strong { font-size: 13px; }
+.search-empty span { font-size: 11px; color: var(--muted); line-height: 1.6; }
+.search-mark { background: #f6d77a; color: inherit; border-radius: 2px; padding: 0 1px; }
+.search-flash { animation: search-flash 1.8s ease-out; }
+@keyframes search-flash {
+  0% { box-shadow: 0 0 0 3px rgba(230, 172, 86, .75); background-color: #fdf3da; }
+  60% { box-shadow: 0 0 0 2px rgba(230, 172, 86, .35); background-color: #fdf3da; }
+  100% { box-shadow: 0 0 0 0 rgba(230, 172, 86, 0); }
+}
+.conflict-field { scroll-margin: 24px; }
 @media (max-width: 1220px) { .content-wrap { padding-left: 25px; padding-right: 25px; }.topbar { padding: 0 25px; }.work-grid { grid-template-columns: minmax(500px, 1fr) 285px; }.lower-grid { grid-template-columns: 1fr; } }
