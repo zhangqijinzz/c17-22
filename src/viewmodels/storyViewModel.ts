@@ -7,10 +7,23 @@ import {
   type StoryDocument,
   type StoryScene,
 } from '../models/story';
-import { getStats, getTimelineWarning, orderedScenes, validateName } from '../models/storyRules';
+import {
+  getStats,
+  getTimelineWarning,
+  orderedScenes,
+  searchStory,
+  validateName,
+  type StorySearchMatch,
+  type StorySearchResults,
+} from '../models/storyRules';
 import type { StoryRepository } from '../repositories/storyRepository';
 
 export type ViewModelStatus = 'loading' | 'ready' | 'editing' | 'error' | 'completed';
+
+export interface SearchHighlight {
+  kind: 'character' | 'scene' | 'clue';
+  id: string;
+}
 
 export interface StoryViewState {
   status: ViewModelStatus;
@@ -19,6 +32,8 @@ export interface StoryViewState {
   notice: string;
   error: string;
   search: string;
+  searchResults: StorySearchResults | null;
+  searchHighlight: SearchHighlight | null;
   activeSection: 'overview' | 'characters' | 'clues';
 }
 
@@ -32,11 +47,17 @@ export class StoryViewModel {
     notice: '',
     error: '',
     search: '',
+    searchResults: null,
+    searchHighlight: null,
     activeSection: 'overview',
   };
   private readonly listeners = new Set<Listener>();
+  private searchTimer: ReturnType<typeof setTimeout> | null = null;
 
-  constructor(private readonly repository: StoryRepository) {}
+  constructor(
+    private readonly repository: StoryRepository,
+    private readonly searchDelay = 160,
+  ) {}
 
   get snapshot(): StoryViewState {
     return this.state;
@@ -57,7 +78,41 @@ export class StoryViewModel {
   }
 
   setSearch(search: string): void {
+    this.cancelSearchTimer();
+    const query = search.trim();
+    if (!query) {
+      this.setState({ search, searchResults: null, searchHighlight: null });
+      return;
+    }
     this.setState({ search });
+    if (this.searchDelay <= 0) {
+      this.runSearch(query);
+      return;
+    }
+    this.searchTimer = setTimeout(() => {
+      this.searchTimer = null;
+      this.runSearch(query);
+    }, this.searchDelay);
+  }
+
+  clearSearch(): void {
+    this.cancelSearchTimer();
+    if (!this.state.search && !this.state.searchResults && !this.state.searchHighlight) return;
+    this.setState({ search: '', searchResults: null, searchHighlight: null });
+  }
+
+  openSearchResult(match: StorySearchMatch): void {
+    if (match.category === 'character') {
+      this.setState({ searchHighlight: { kind: 'character', id: match.id } });
+      return;
+    }
+    if (match.category === 'clue') {
+      this.setState({ searchHighlight: { kind: 'clue', id: match.id } });
+      return;
+    }
+    const sceneId = match.sceneId ?? match.id;
+    this.selectScene(sceneId);
+    this.setState({ searchHighlight: { kind: 'scene', id: sceneId } });
   }
 
   setSection(activeSection: StoryViewState['activeSection']): void {
@@ -158,21 +213,14 @@ export class StoryViewModel {
   }
 
   resetProject(): void {
+    this.cancelSearchTimer();
     const story = createStarterStory();
     this.persist(story);
-    this.setState({ status: 'ready', story, stats: getStats(story), notice: '已恢复示例项目', error: '' });
+    this.setState({ status: 'ready', story, stats: getStats(story), notice: '已恢复示例项目', error: '', search: '', searchResults: null, searchHighlight: null });
   }
 
-  get visibleCharacters(): StoryCharacter[] {
-    const story = this.requireStory();
-    const keyword = this.state.search.trim().toLowerCase();
-    return story.characters.filter((character) => `${character.name}${character.role}`.toLowerCase().includes(keyword));
-  }
-
-  get visibleScenes(): StoryScene[] {
-    const story = this.requireStory();
-    const keyword = this.state.search.trim().toLowerCase();
-    return orderedScenes(story).filter((scene) => `${scene.title}${scene.summary}${scene.conflict}`.toLowerCase().includes(keyword));
+  get timelineScenes(): StoryScene[] {
+    return orderedScenes(this.requireStory());
   }
 
   get selectedScene(): StoryScene | null {
@@ -193,7 +241,26 @@ export class StoryViewModel {
   private updateStory(updater: (story: StoryDocument) => StoryDocument, showEditing = true): void {
     const story = updater(this.requireStory());
     this.persist(story);
-    this.setState({ story, stats: getStats(story), status: showEditing ? 'editing' : this.state.status, error: '' });
+    const query = this.state.search.trim();
+    this.setState({
+      story,
+      stats: getStats(story),
+      status: showEditing ? 'editing' : this.state.status,
+      error: '',
+      searchResults: query ? searchStory(story, query) : this.state.searchResults,
+    });
+  }
+
+  private runSearch(query: string): void {
+    const story = this.state.story;
+    if (!story || this.state.search.trim() !== query) return;
+    this.setState({ searchResults: searchStory(story, query) });
+  }
+
+  private cancelSearchTimer(): void {
+    if (this.searchTimer === null) return;
+    clearTimeout(this.searchTimer);
+    this.searchTimer = null;
   }
 
   private persist(story: StoryDocument): void {

@@ -91,3 +91,33 @@ input, textarea, select { border: 1px solid var(--line); border-radius: 5px; bac
 .inspector { position: sticky; top: 22px; }.inspector-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px; }.inspector h2 { max-width: 210px; line-height: 1.2; }.edit-state { color: #628066; font: 10px 'DM Mono', monospace; background: #e4efe5; padding: 5px 7px; border-radius: 3px; }.inspector label, .field-block { display: grid; gap: 7px; margin-top: 17px; }.inspector label, .field-label { color: var(--muted); font-size: 11px; }.inspector textarea { resize: vertical; line-height: 1.5; }.person-toggles { display: flex; flex-wrap: wrap; gap: 6px; }.person-toggle { display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--line); border-radius: 14px; background: #fffefa; padding: 4px 8px 4px 4px; color: var(--muted); font-size: 10px; }.person-toggle span { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: #e9e3da; color: #fff; }.person-toggle.selected { color: #fff; border-color: transparent; }.person-toggle.selected span { background: #ffffff55; }.order-controls { border-top: 1px solid var(--line); margin-top: 22px; padding-top: 16px; display: flex; align-items: center; gap: 6px; }.order-controls span { margin-right: auto; color: var(--muted); font-size: 11px; }.order-controls button { border: 1px solid var(--line); background: #fffefa; border-radius: 4px; padding: 6px 8px; color: var(--ink); font-size: 10px; }.order-controls button:disabled { opacity: .35; cursor: not-allowed; }.empty-inspector { min-height: 220px; }.empty-inspector p { color: var(--muted); font-size: 12px; line-height: 1.6; }
 .app-loading { min-height: 100vh; display: grid; place-content: center; justify-items: center; color: var(--muted); }.app-loading p { font-size: 12px; }
 @media (max-width: 1220px) { .content-wrap { padding-left: 25px; padding-right: 25px; }.topbar { padding: 0 25px; }.work-grid { grid-template-columns: minmax(500px, 1fr) 285px; }.lower-grid { grid-template-columns: 1fr; } }
+
+/* 搜索结果 */
+.search-area { position: relative; }
+.search-clear { border: 0; background: none; color: var(--muted); font-size: 11px; padding: 2px 4px; border-radius: 4px; }
+.search-clear:hover { color: var(--coral); background: #f5ece2; }
+.search-results { position: absolute; top: calc(100% + 9px); right: 0; width: 372px; max-height: 64vh; overflow-y: auto; background: var(--paper); border: 1px solid var(--line); border-radius: 9px; box-shadow: 0 18px 44px rgba(38, 35, 31, .16); z-index: 40; padding: 10px; }
+.search-results-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 4px 6px 10px; color: var(--muted); font-size: 11px; border-bottom: 1px solid var(--line); }
+.search-results-head button { border: 0; background: none; color: var(--muted); font-size: 11px; padding: 2px 5px; border-radius: 4px; }
+.search-results-head button:hover { color: var(--coral); background: #f5ece2; }
+.search-group { padding-top: 9px; }
+.search-group-title { display: flex; align-items: center; gap: 7px; font: 500 10px 'DM Mono', monospace; letter-spacing: 1px; color: var(--muted); padding: 0 6px 6px; }
+.search-group-title span { background: #f2e8dc; color: #b16c4e; border-radius: 8px; padding: 1px 6px; }
+.search-result { display: grid; gap: 4px; width: 100%; text-align: left; border: 0; background: none; border-radius: 6px; padding: 8px 9px; color: var(--ink); }
+.search-result:hover, .search-result:focus-visible { background: #fff4e8; outline: none; }
+.search-result-head { display: flex; align-items: baseline; gap: 7px; min-width: 0; }
+.search-result-head em { flex-shrink: 0; font-style: normal; font-size: 10px; background: #e7edf5; color: #62789d; border-radius: 3px; padding: 2px 5px; }
+.search-result-head strong { font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.search-result-meta { margin-left: auto; flex-shrink: 0; color: #b9b0a4; font: 10px 'DM Mono', monospace; }
+.search-result-text { color: var(--muted); font-size: 11px; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.search-results mark { background: #fbe3a8; color: inherit; border-radius: 2px; padding: 0 1px; }
+.search-empty { display: grid; gap: 7px; padding: 22px 14px 18px; text-align: center; }
+.search-empty strong { font-size: 13px; }
+.search-empty span { color: var(--muted); font-size: 11px; line-height: 1.7; }
+
+/* 命中目标标记 */
+@keyframes search-pulse { 0% { box-shadow: 0 0 0 0 rgba(229, 108, 82, .5); } 100% { box-shadow: 0 0 0 9px rgba(229, 108, 82, 0); } }
+.scene-node.search-hit .scene-copy { border-color: var(--coral); background: #fff3ea; animation: search-pulse 1.1s ease-out 2; }
+.scene-node.search-hit .scene-dot { border-color: var(--coral); }
+.character-card.search-hit { background: #fff3ea; border-radius: 5px; animation: search-pulse 1.1s ease-out 2; }
+.clue-row.search-hit { background: #fff3ea; border-radius: 6px; padding: 4px 6px; margin: -4px -6px; animation: search-pulse 1.1s ease-out 2; }
